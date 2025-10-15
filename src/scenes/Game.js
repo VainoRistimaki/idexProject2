@@ -22,7 +22,7 @@ export class Game extends Phaser.Scene {
         this.score = 0;
         this.distance = 0;
         this.distanceMax = 200;
-        this.flyVelocity = -200;
+        this.flyVelocity = -300;
         this.backgroundSpeed = 0;
         this.coinDistance = 0;
         this.coinDistanceMax = 50;
@@ -44,6 +44,9 @@ export class Game extends Phaser.Scene {
         this.points = 0;
 
         this.text = '';
+        this.bullets =[]; 
+
+        this.lastDirection = 1;
     }
 
     create() {
@@ -117,7 +120,7 @@ export class Game extends Phaser.Scene {
                 this.typing.setText(this.text)
             }
         });
-
+/*
         this.input.keyboard.on('keyup', (event) => {
             switch(event.code) {
                 case 'KeyM':
@@ -129,8 +132,9 @@ export class Game extends Phaser.Scene {
             }
         });
 
-
+ */
     }
+   
 
     update() {
         this.timer -= 0.05
@@ -161,14 +165,23 @@ export class Game extends Phaser.Scene {
         this.enemies.forEach((e) => {
             if (e.sprite) {
                 e.sprite.x -= (this.backgroundSpeed * 2)
+                /*
                 if (e.sprite.y > 500) {
                     e.sprite.y = 500
                     if (e != undefined && e.sprite != undefined && e.sprite.body != undefined) {
                         e.sprite.body.allowGravity = false
                     }
                 }
+                */
 
                 this.enemyMove(e)
+            }
+        })
+
+        this.bullets.forEach((b) => {
+            if (b.sprite) {
+                b.sprite.x -= (this.backgroundSpeed * 2)
+                b.sprite.x += b.dir * 10
             }
         })
 
@@ -316,6 +329,16 @@ export class Game extends Phaser.Scene {
         this.tutorialText.setVisible(false);
     }
 
+    shootTazer(char, dir) {
+        const sprite = this.physics.add.staticSprite(char.x + (dir * 100), char.y, ASSETS.spritesheet.tazer.key)
+            .setDepth(100)
+        
+        const bullet = new Bullet(sprite, dir)
+        this.bullets.push(bullet)
+        //const enemy = new Enemy(orc, 1)
+        //this.enemies.push(enemy);
+    }
+
     attack(char) {
         char.angle = 50;
         setTimeout(() => char.angle = 0 , 100);
@@ -326,7 +349,7 @@ export class Game extends Phaser.Scene {
         if (char == this.player) {
             this.enemies.forEach( e => {
                     if (e.sprite != char) {
-                        if (Math.abs(e.sprite.x - char.x) < 70) {
+                        if (this.calculateDistance(e.sprite, char) < 70) {
                             e.hp -= 1
                             if (e.hp <= 0) {
                                 this.points += 1
@@ -350,7 +373,7 @@ export class Game extends Phaser.Scene {
         })
 
         if (char != this.player) {
-            if (Math.abs(this.player.x - char.x) < 60) {
+            if (this.calculateDistance(char, this.player) < 60) {
                 this.hp -= 1
                 if (this.hp <= 0) {
                     this.GameOver()
@@ -360,6 +383,10 @@ export class Game extends Phaser.Scene {
             } 
 
         }
+    }
+
+    calculateDistance(char1, char2) {
+        return (Math.sqrt(Math.pow(char1.x - char2.x, 2) + Math.pow(char1.y - char2.y, 2)))
     }
 
     action(key) {
@@ -399,6 +426,8 @@ export class Game extends Phaser.Scene {
                 break;
             case 'G':
                 this.forwardPressed = 1;
+                this.backwardsPressed = 0;
+                this.lastDirection = 1;
                 m = `G - Go Forward`
                 break;
             case 'H':
@@ -410,7 +439,9 @@ export class Game extends Phaser.Scene {
                 m = 'I - Idle'
                 break;
             case 'J':
-                this.fly();
+                if (this.player.y > 500) {
+                    this.fly();
+                }
                 m = 'J - Jump'
                 break;
             case 'K':
@@ -422,6 +453,8 @@ export class Game extends Phaser.Scene {
                 break;
             case 'M':
                 this.backwardsPressed = 1;
+                this.forwardPressed = 0;
+                this.lastDirection = -1;
                 m = `M - Move Backwards`
                 break;
             case 'N':
@@ -453,6 +486,7 @@ export class Game extends Phaser.Scene {
 
                 break;
             case 'T':
+                this.shootTazer(this.player, this.lastDirection)
                 m = 'T - Tazer'
                 break;
             case 'U':
@@ -501,7 +535,7 @@ export class Game extends Phaser.Scene {
     }
 
     addOrc(x) {
-        const orc = this.physics.add.sprite(x, 400, ASSETS.spritesheet.orc.key)
+        const orc = this.physics.add.staticSprite(x, 510, ASSETS.spritesheet.orc.key)
             .setDepth(100)
         const enemy = new Enemy(orc, 1)
         this.enemies.push(enemy);
@@ -512,7 +546,7 @@ export class Game extends Phaser.Scene {
 
         if (!enemy.wait) {
 
-            if (Math.abs(enemy.sprite.x - this.player.x) > 40) {
+            if (this.calculateDistance(enemy.sprite, this.player) > 40) {
                 if (enemy.sprite.x < this.player.x) {
                     enemy.sprite.x += speed
                 }
@@ -566,5 +600,12 @@ class Enemy {
         this.sprite = sprite
         this.hp = hp;
         this.wait = false;
+    }
+}
+
+class Bullet {
+    constructor(sprite, dir) {
+        this.sprite = sprite
+        this.dir = dir
     }
 }

@@ -54,6 +54,13 @@ export default {
                 frameWidth: 120,
                 frameHeight: 180,
             }]
+        },
+        tazer: {
+            key: 'tazer',
+            args: ['assets/tazer.png', {
+                frameWidth: 100,
+                frameHeight: 100,                
+            }]
         }
     }
 };
