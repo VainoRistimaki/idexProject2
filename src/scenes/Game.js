@@ -41,6 +41,7 @@ export class Game extends Phaser.Scene {
         this.hp = 10;
 
         this.timer = 0;
+        this.points = 0;
     }
 
     create() {
@@ -64,8 +65,8 @@ export class Game extends Phaser.Scene {
         }).setOrigin(0.5);
 
         // Create score text
-        this.scoreText = this.add.text(this.centreX, 50, '', {
-            fontFamily: 'Arial Black', fontSize: 28, color: '#ffffff',
+        this.scoreText = this.add.text(this.centreX, 120, '', {
+            fontFamily: 'Arial Black', fontSize: 45, color: '#ffffff',
             stroke: '#000000', strokeThickness: 8,
             align: 'center'
         })
@@ -75,7 +76,15 @@ export class Game extends Phaser.Scene {
         this.hpText = this.add.text(this.centreX - 300, 50, 'HP: 10', {
             fontFamily: 'Arial Black', fontSize: 28, color: '#ffffff',
             stroke: '#000000', strokeThickness: 8,
-            align: 'center'
+            align: 'right'
+        })
+            .setOrigin(0.5)
+            .setDepth(100);
+        
+        this.pointsText = this.add.text(this.centreX + 300, 50, 'Score: 0', {
+            fontFamily: 'Arial Black', fontSize: 28, color: '#ffffff',
+            stroke: '#000000', strokeThickness: 8,
+            align: 'left'
         })
             .setOrigin(0.5)
             .setDepth(100);
@@ -110,7 +119,7 @@ export class Game extends Phaser.Scene {
 
         if (this.timer < 0) {
             console.log("orc")
-            this.timer = 5.0
+            this.timer = Math.random() * 10 + 5
             let x = 0
             if (Math.random() > 0.5) {
                 x = -400
@@ -295,23 +304,30 @@ export class Game extends Phaser.Scene {
         const destroyed = []
 
         let i = 0
-
-        this.enemies.forEach( e => {
-                if (e.sprite != char) {
-                    if (Math.abs(e.sprite.x - char.x) < 70) {
-                        e.hp -= 1
-                        if (e.hp <= 0) {
-                            e.sprite.destroy()
-                            destroyed.push(i)
-                        }
-                    } 
+        if (char == this.player) {
+            this.enemies.forEach( e => {
+                    if (e.sprite != char) {
+                        if (Math.abs(e.sprite.x - char.x) < 70) {
+                            e.hp -= 1
+                            if (e.hp <= 0) {
+                                this.points += 1
+                                this.pointsText.setText("Score: " + this.points)
+                                destroyed.push(i)
+                            }
+                        } 
+                    }
+                    i += 1
                 }
-                i += 1
-            }
-        )
+            )
+        }
 
+        destroyed.sort((a, b) => a - b)
+
+        i = 0;
         destroyed.forEach( index => {
-            this.enemies.splice(index, 1);
+            this.enemies[index - i].sprite.destroy()
+            this.enemies.splice(index - i, 1);
+            i += 1
         })
 
         if (char != this.player) {
@@ -412,6 +428,9 @@ export class Game extends Phaser.Scene {
                 break;
             case 'Z':
                 m = 'Z - Zero Points'
+                this.points = 0;
+                this.pointsText.setText("Score: 0")
+
                 break;
             case 'T':
                 m = 'T - Tazer'
