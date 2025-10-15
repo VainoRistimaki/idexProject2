@@ -42,6 +42,8 @@ export class Game extends Phaser.Scene {
 
         this.timer = 0;
         this.points = 0;
+
+        this.text = '';
     }
 
     create() {
@@ -89,6 +91,14 @@ export class Game extends Phaser.Scene {
             .setOrigin(0.5)
             .setDepth(100);
 
+        this.typing = this.add.text(30, 150, '', {
+            fontFamily: 'Arial', fontSize: 15, color: '#ffffff',
+            stroke: '#000000', strokeThickness: 3,
+            align: 'left'
+        })
+            .setOrigin(0)
+            .setDepth(10);
+
         this.initAnimations();
         this.initPlayer();
         this.initInput();
@@ -98,6 +108,14 @@ export class Game extends Phaser.Scene {
             const code = event.code.slice(3)
             const text = this.action(code)
             this.scoreText.setText(text);
+            this.text += code
+            this.typing.setText(this.text)
+
+            if (this.typing.width > 760) {
+                this.text = this.text.slice(0, this.text.length - 1)
+                this.text += '\n' + code
+                this.typing.setText(this.text)
+            }
         });
 
         this.input.keyboard.on('keyup', (event) => {
@@ -289,10 +307,11 @@ export class Game extends Phaser.Scene {
     startGame() {
         this.gameStarted = true;
         this.physics.resume();
+        /*
         this.input.on('pointerdown', () => {
             this.fly();
         });
-
+*/
         this.fly();
         this.tutorialText.setVisible(false);
     }
@@ -383,8 +402,9 @@ export class Game extends Phaser.Scene {
                 m = `G - Go Forward`
                 break;
             case 'H':
-                this.sound.play('scream')
-                m = 'H - Howl'
+                this.hp = 10;
+                this.hpText.setText("HP: 10")
+                m = 'H - Heal'
                 break;
             case 'I':
                 m = 'I - Idle'
@@ -449,7 +469,8 @@ export class Game extends Phaser.Scene {
                 m = 'X - X-Ray'
                 break;
             case 'Y':
-                m = 'Y - Yellow'
+                this.sound.play('scream')
+                m = 'Y - Yell'
                 break; 
             case 'Z':
                 m = 'Z - Zoom'
