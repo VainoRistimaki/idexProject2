@@ -394,13 +394,13 @@ export class Game extends Phaser.Scene {
         this.physics.pause();
         this.pauseGame()
         
-        if (!this.started) {
-            this.input.keyboard.on('keydown', () => {
+        
+        this.input.keyboard.on('keydown', () => {
+            if (!this.started) {
                 this.startGame();
-            });
-        }
-
-        this.started = true;
+                this.started = true;
+            }
+        });
     }
 
     pauseGame() {
