@@ -4,6 +4,10 @@ export default {
             key: 'scream',
             args: ['assets/scream.mp3']
         },
+        musis: {
+            key: 'music',
+            args: ['assets/music.mp3']
+        }
     },
     'image': {
         spikes: {
@@ -17,6 +21,10 @@ export default {
         finland: {
             key: 'finland',
             args: ['assets/finland.jpg']
+        },
+        space: {
+            key: 'space',
+            args: ['assets/space.jpg']
         }
     },
     'spritesheet': {
@@ -51,6 +59,13 @@ export default {
         orc: {
             key: 'orc',
             args: ['assets/orc.png', {
+                frameWidth: 120,
+                frameHeight: 180,
+            }]
+        },
+        robot: {
+            key: 'robot',
+            args: ['assets/robot.png', {
                 frameWidth: 120,
                 frameHeight: 180,
             }]
