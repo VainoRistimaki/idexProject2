@@ -55,6 +55,9 @@ export class Game extends Phaser.Scene {
     }
 
     create() {
+        this.started = false;
+        this.text = ""
+
         this.music = this.sound.play('music')
 
         this.centreX = this.scale.width * 0.5;
@@ -116,14 +119,25 @@ export class Game extends Phaser.Scene {
 
         this.input.keyboard.on('keydown', (event) => {
             let code = ""
-            switch (event.code) {
-                default:
-                    code = event.code.slice(3)
-                    break;
-                case "Space":
-                    code = " "
-                    break;
+
+            if (event.code.slice(0, 5) == "Digit") {
+                code = event.code.slice(5)
             }
+
+            else {
+                switch (event.code) {
+                    default:
+                        code = event.code.slice(3)
+                        break;
+                    case "Space":
+                        code = " "
+                        break;
+                    case "Enter":
+                        code = "\n"
+                        break;
+                }
+            }
+
 
             //const code = event.code.slice(3)
             const text = this.action(code)
@@ -214,7 +228,7 @@ export class Game extends Phaser.Scene {
                     let i = 0
                     this.enemies.forEach ((e) => {
                         const [destroy, bullet] = this.bulletDamage(b, e)
-                        console.log(bullet);
+                        //console.log(bullet);
                         if (destroy) {
                             destroyed.push(i)
                         }
@@ -574,6 +588,8 @@ export class Game extends Phaser.Scene {
                 this.background1.setTexture('background')
                 this.background2.setTexture('background')
                 this.player.setTexture('conan')
+                this.sound.pauseAll()
+                this.sound.play("music")
                 m = 'N - Normal'
                 break;
             case 'O':
@@ -627,6 +643,35 @@ export class Game extends Phaser.Scene {
                 this.background1.setTexture('space');
                 this.background2.setTexture('space');
                 m = 'Space - Space'
+                break;
+            case '\n':
+                //this.sound.on('stopall', listener)
+                this.sound.pauseAll()
+                this.sound.play("enter")
+                m = "Enter - Enter Sandman"
+                break;
+            case '1':
+                m = "1 - 1st Action"
+                if (this.text[0] && this.text[0] != '1') {
+                    this.action(this.text[0])
+                }
+                break;
+            case '2':
+                m = "2 - 2nd to Last Action"
+                const index = this.text.length - 2
+                if (this.text[index] && this.text[index] != '2') {
+                    this.action(this.text[index])
+                }
+                break;
+            case '3':
+                m = "3 - 3 Times the Last Action"
+                const index2 = this.text.length - 1
+                if (this.text[index2] && this.text[index2] != '3') {
+                    this.action(this.text[index2])
+                    setTimeout(() => this.action(this.text[index2]), 200);
+                    setTimeout(() => this.action(this.text[index2]), 400);
+                }
+                break;
 
             
                 

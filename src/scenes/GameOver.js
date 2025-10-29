@@ -16,5 +16,20 @@ export class GameOver extends Phaser.Scene {
             stroke: '#000000', strokeThickness: 8,
             align: 'center'
         }).setOrigin(0.5);
+
+
+        this.add.text(this.scale.width * 0.5, this.scale.height * 0.5 + 50, 'Press any key to play again', {
+            fontFamily: 'Arial Black', fontSize: 30, color: '#00ff00',
+            stroke: '#000000', strokeThickness: 8,
+            align: 'center'
+        }).setOrigin(0.5);
+
+
+
+        this.input.keyboard.on('keydown', (event) => {
+            this.time.delayedCall(500, () => {
+                this.scene.start('Game');
+            });
+        })
     }
 }

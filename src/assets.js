@@ -7,6 +7,10 @@ export default {
         musis: {
             key: 'music',
             args: ['assets/music.mp3']
+        },
+        enter: {
+            key: 'enter',
+            args: ['assets/enter.mp3']
         }
     },
     'image': {
