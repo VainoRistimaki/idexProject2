@@ -628,7 +628,9 @@ export class Game extends Phaser.Scene {
                 m = 'W - Win'
                 break; 
             case 'X':
-                m = 'X - X-Ray'
+                this.background1.setTexture('finland');
+                this.background2.setTexture('finland');
+                m = 'X - Xylitol Country'
                 break;
             case 'Y':
                 this.sound.play('scream')
