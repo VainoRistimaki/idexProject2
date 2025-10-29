@@ -81,7 +81,7 @@ export class Game extends Phaser.Scene {
 
         // Create score text
         this.scoreText = this.add.text(this.centreX, 120, '', {
-            fontFamily: 'Arial Black', fontSize: 45, color: '#ffffff',
+            fontFamily: 'Arial Black', fontSize: 40, color: '#ffffff',
             stroke: '#000000', strokeThickness: 8,
             align: 'center'
         })
@@ -666,18 +666,29 @@ export class Game extends Phaser.Scene {
                 }
                 break;
             case '3':
-                m = "3 - 3 Times the Last Action"
+                m = "3 - 3x Health"
+                this.hp = this.hp * 3
+                this.hpText.setText("HP: "+ this.hp)
+                break;
+            case '4':
+                m = `4 - 4th Wall Break: "Hello Player"`
+                break;
+            case '5':
+                m = '5 - 5 Times the Last Action'
                 const index2 = this.text.length - 1
-                if (this.text[index2] && this.text[index2] != '3') {
+                if (this.text[index2] && this.text[index2] != '5') {
                     this.action(this.text[index2])
-                    setTimeout(() => this.action(this.text[index2]), 200);
-                    setTimeout(() => this.action(this.text[index2]), 400);
+                    setTimeout(() => this.action(this.text[index2]), 300);
+                    setTimeout(() => this.action(this.text[index2]), 600);
+                    setTimeout(() => this.action(this.text[index2]), 900);
+                    setTimeout(() => this.action(this.text[index2]), 1200);
                 }
                 break;
-
-            
-                
-            
+            case '6':
+                m = "6 - 6 Health"
+                this.hp = 6
+                this.hpText.setText("HP: 6")
+                break; 
         }
         return m
     }
