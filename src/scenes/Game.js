@@ -52,11 +52,22 @@ export class Game extends Phaser.Scene {
         this.started = false;
 
         this.music = null;
+        this.space = false;
     }
 
     create() {
         this.started = false;
         this.text = ""
+
+        this.space = false;
+
+        this.enemies = []
+        this.bullets = []
+
+        this.timer = 0;
+        this.points = 0;
+
+        this.hp = 10;
 
         this.music = this.sound.play('music')
 
@@ -200,6 +211,19 @@ export class Game extends Phaser.Scene {
             this.ground2.x -= (this.backgroundSpeed * 2);
 
             this.enemies.forEach((e) => {
+
+                /*
+                e.addTimer(0.05)
+                
+                if (e.timer >= 1 && e.sprite.texture.key == "robot") {
+                    console.log("SHOOT")
+                    this.shootTazer(e, 1)
+                    e.resetTimer()
+                }
+                */
+
+
+
                 if (e.sprite) {
                     e.sprite.x -= (this.backgroundSpeed * 2)
                     /*
@@ -237,6 +261,8 @@ export class Game extends Phaser.Scene {
                         }
                         i += 1
                     })
+
+                    //this.bulletDamage(b, this.player)
 
                     destroyed.sort((a, b) => a - b)
 
@@ -548,6 +574,7 @@ export class Game extends Phaser.Scene {
             case 'F':
                 this.background1.setTexture('finland');
                 this.background2.setTexture('finland');
+                this.space = false;
                 m = 'F - Finland'
                 break;
             case 'G':
@@ -565,7 +592,12 @@ export class Game extends Phaser.Scene {
                 m = 'I - Idle'
                 break;
             case 'J':
-                if (this.player.y > 500) {
+                if (!this.space) {
+                    if (this.player.y > 500) {
+                        this.fly();
+                    }
+                }
+                else {
                     this.fly();
                 }
                 m = 'J - Jump'
@@ -590,6 +622,7 @@ export class Game extends Phaser.Scene {
                 this.player.setTexture('conan')
                 this.sound.pauseAll()
                 this.sound.play("music")
+                this.space = false;
                 m = 'N - Normal'
                 break;
             case 'O':
@@ -630,6 +663,7 @@ export class Game extends Phaser.Scene {
             case 'X':
                 this.background1.setTexture('finland');
                 this.background2.setTexture('finland');
+                this.space = false;
                 m = 'X - Xylitol Country'
                 break;
             case 'Y':
@@ -644,6 +678,7 @@ export class Game extends Phaser.Scene {
             case ' ':
                 this.background1.setTexture('space');
                 this.background2.setTexture('space');
+                this.space = true;
                 m = 'Space - Space'
                 break;
             case '\n':
@@ -722,6 +757,7 @@ export class Game extends Phaser.Scene {
             .setDepth(100)
         const enemy = new Enemy(robot, 1)
         this.enemies.push(enemy);
+
     }
 
     enemyMove(enemy) {
@@ -773,8 +809,6 @@ export class Game extends Phaser.Scene {
             this.scene.start('GameOver', {points: this.points});
         });
     }
-
-
 }
 
 class Enemy {
@@ -782,7 +816,27 @@ class Enemy {
         this.sprite = sprite
         this.hp = hp;
         this.wait = false;
+
+        this.timer = 0;
+
+        //setInterval(() => this.doThing() , 2000);
     }
+
+    addTimer(add) {
+        this.timer += add
+    }
+
+    resetTimer() {
+        this.timer = 0
+    }
+
+    /*
+    doThing() {
+        if (this.sprite.texture.key == "robot") {
+            this.shootTazer(this.sprite, -1)
+        }
+    }
+    */
 }
 
 class Bullet {
