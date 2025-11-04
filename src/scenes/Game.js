@@ -128,6 +128,11 @@ export class Game extends Phaser.Scene {
         this.initInput();
         this.initPhysics();
 
+        function isLetter(str) {
+            return str.length === 1 && str.match(/[a-z]/i);
+        }
+
+
         this.input.keyboard.on('keydown', (event) => {
             let code = ""
 
@@ -135,16 +140,29 @@ export class Game extends Phaser.Scene {
                 code = event.code.slice(5)
             }
 
+            else if (isLetter(event.code.slice(3))) {
+                code = event.code.slice(3)
+            }
+
             else {
+                console.log(event.code);
+
                 switch (event.code) {
+                    
                     default:
-                        code = event.code.slice(3)
+                        code = ""
                         break;
                     case "Space":
                         code = " "
                         break;
                     case "Enter":
                         code = "\n"
+                        break;
+                    case "Period":
+                        code = "."
+                        break;
+                    case "Comma":
+                        code = ","
                         break;
                 }
             }
@@ -380,7 +398,7 @@ export class Game extends Phaser.Scene {
         let destroyed = null
         let bulletNow = bullet
         if (this.calculateDistance(bullet.sprite, creature.sprite) < 60) {
-            console.log("HELLO")
+            //console.log("HELLO")
             destroyed = this.damageCreature(creature)
 
             bullet.sprite.destroy();
@@ -548,8 +566,9 @@ export class Game extends Phaser.Scene {
                 m = 'A - Attack'
                 break;
             case 'B':
-                this.GameOver(this.points);
-                m = `B - Bye Bye`
+                //this.GameOver(this.points);
+                this.attack(this.player);
+                m = `B - Break Their Bones`
                 break;
             case 'C':
                 //console.log(this.player.texture)
@@ -562,8 +581,8 @@ export class Game extends Phaser.Scene {
                 m = 'C - Change Form'
                 break;
             case 'D':
-                this.GameOver();
-                m = `D - Die`
+                this.attack(this.player);
+                m = `D - Destroy Your Enemies`
                 break;
             case 'E':
                 //this.GameOver();
@@ -603,12 +622,11 @@ export class Game extends Phaser.Scene {
                 m = 'J - Jump'
                 break;
             case 'K':
-                this.GameOver();
-                m = 'K - Kill the Game'
+                this.attack(this.player)
+                m = 'K - Kill It'
                 break;
             case 'L':
-                this.GameOver();
-                m = 'Lose'
+                m = 'L - Level Up'
                 break;
             case 'M':
                 this.backwardsPressed = 1;
@@ -724,6 +742,45 @@ export class Game extends Phaser.Scene {
                 this.hp = 6
                 this.hpText.setText("HP: 6")
                 break; 
+            case '7':
+                m = "7 - 7th Thing"
+                const index3 = this.text.length - 1
+                if (this.text[index3] && this.text[index3] != '7') {
+                this.action(this.text[index3])
+                }
+                break; 
+            case '8':
+                m = "8 - 8th Thing"
+                const index4 = this.text.length - 1
+                if (this.text[index4] && this.text[index4] != '8') {
+                this.action(this.text[index4])
+                }
+                break; 
+            case '9':
+                m = "9 - 9th Thing"
+                const index5 = this.text.length - 1
+                if (this.text[index5] && this.text[index5] != '9') {
+                this.action(this.text[index5])
+                }
+                break; 
+            case '0':
+                m = "0 - 0 Health"
+                this.hp = 0
+                this.hpText.setText("HP: 0")
+                this.GameOver()
+                break; 
+            case '.':
+                m = ". - .5 Health"
+                const hp = this.hp / 2
+                this.hp = hp
+                this.hpText.setText("HP: " + hp)
+                break;
+            case ',':
+                m = ", - ,,,"
+                break;
+            case '':
+                m = ''
+                break;
         }
         return m
     }
@@ -806,6 +863,7 @@ export class Game extends Phaser.Scene {
 
     GameOver() {
         this.time.delayedCall(500, () => {
+            this.sound.pauseAll()
             this.scene.start('GameOver', {points: this.points});
         });
     }
